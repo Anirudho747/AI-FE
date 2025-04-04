@@ -179,6 +179,8 @@ const GenerateManualTestCases = () => {
     {/*      />*/}
     {/*    </div>*/}
 
+
+
         <div className="form-group">
           <label>Test Type:</label>
           <div className="checkbox-group">
