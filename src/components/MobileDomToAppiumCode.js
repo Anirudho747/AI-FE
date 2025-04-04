@@ -1,4 +1,4 @@
-// src/components/SeleniumToPlaywrightPage.js
+// src/components/MobileDomToAppiumCode.js
 import React, { useState } from 'react';
 import AceEditor from 'react-ace';
 import { FaExchangeAlt } from 'react-icons/fa';
@@ -6,26 +6,26 @@ import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-typescript';
 
-function SeleniumToPlaywrightPage() {
-  const [seleniumCode, setSeleniumCode] = useState('');
-  const [playwrightCode, setPlaywrightCode] = useState('');
+function MobileDomToAppiumCode() {
+  const [mobileDom, setMobileDom] = useState('');
+  const [appiumCode, setAppiumCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [compileMessage, setCompileMessage] = useState('');
   const [runMessage, setRunMessage] = useState('');
   const [resultURL, setResultURL] = useState('');
 
-  // Convert Selenium code to Playwright code
+  // Convert Dom to Appium code
   async function handleConvert() {
-    if (!seleniumCode.trim()) {
-      alert('Please enter Selenium code.');
+    if (!mobileDom.trim()) {
+      alert('Please enter DOM Elemensts.');
       return;
     }
     setIsLoading(true);
      try {
-      const response = await fetch('http://localhost:8080/api/convert/seleniumToPlaywright', {
+      const response = await fetch('http://localhost:8080/api/generate/manualTestcase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ seleniumCode })
+        body: JSON.stringify({ mobileDom })
       });
       if (!response.ok) {
         const errMsg = await response.text();
@@ -33,7 +33,7 @@ function SeleniumToPlaywrightPage() {
         return;
       }
       const converted = await response.text();
-      setPlaywrightCode(converted);
+       setAppiumCode(converted);
     } catch (err) {
       console.error(err);
       alert('Error converting code: ' + err);
@@ -44,7 +44,7 @@ function SeleniumToPlaywrightPage() {
 
   // Compile Selenium code (stub endpoint)
   async function handleCompileSelenium() {
-    if (!seleniumCode.trim()) {
+    if (!mobileDom.trim()) {
       alert('Please enter Selenium code.');
       return;
     }
@@ -53,7 +53,7 @@ function SeleniumToPlaywrightPage() {
       const response = await fetch('http://localhost:8080/api/convert/compileSelenium', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: seleniumCode })
+        body: JSON.stringify({ code: mobileDom })
       });
       const message = await response.text();
       setCompileMessage(message);
@@ -67,7 +67,7 @@ function SeleniumToPlaywrightPage() {
 
  // Run Playwright code
   async function handleRunPlaywright() {
-    if (!playwrightCode.trim()) {
+    if (!appiumCode.trim()) {
       alert('Please convert code first.');
       return;
     }
@@ -76,7 +76,7 @@ function SeleniumToPlaywrightPage() {
       const response = await fetch('http://localhost:8080/api/convert/runPlaywrightProxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: playwrightCode, language: 'javascript' })
+        body: JSON.stringify({ code: appiumCode, language: 'javascript' })
       });
       if (!response.ok) {
         const errMsg = await response.text();
@@ -107,22 +107,21 @@ function SeleniumToPlaywrightPage() {
     }
   }
 
-
   return (
     <div className="main-content">
-      <h2>Selenium to Playwright Conversion</h2>
+      <h2>Mobile DOM to Appium Code Conversion</h2>
       <div className="editor-container">
         <div className="editor-wrapper">
-          <h4>Selenium Java Code</h4>
+          <h4>Mobile Dom Elements</h4>
           <AceEditor
             mode="java"
             theme="textmate"
-            name="seleniumEditor"
+            name="DOM Elements"
             width="100%"
             height="750px"
             fontSize={14}
-            value={seleniumCode}
-            onChange={(newValue) => setSeleniumCode(newValue)}
+            value={setMobileDom}
+            onChange={(newValue) => setMobileDom(newValue)}
             editorProps={{ $blockScrolling: true }}
             setOptions={{ useWorker: false }}
           />
@@ -133,20 +132,21 @@ function SeleniumToPlaywrightPage() {
           </div>
           <div className="message">{compileMessage}</div>
         </div>
-        <div className="convert-icon" onClick={handleConvert} title="Convert Selenium to Playwright">
+
+        <div className="convert-icon" onClick={handleConvert} title="Generate Appium Code">
           <FaExchangeAlt size={30} color="#2c3e50" />
         </div>
         <div className="editor-wrapper">
-          <h4>Playwright TypeScript Code</h4>
+          <h4>Appium Code</h4>
           <AceEditor
             mode="typescript"
             theme="textmate"
-            name="playwrightEditor"
+            name="Appium Editor"
             width="100%"
             height="750px"
             fontSize={14}
-            value={playwrightCode}
-            onChange={(newValue) => setPlaywrightCode(newValue)}
+            value={appiumCode}
+            onChange={(newValue) => setAppiumCode(newValue)}
             editorProps={{ $blockScrolling: true }}
             setOptions={{ useWorker: false }}
           />
@@ -155,7 +155,7 @@ function SeleniumToPlaywrightPage() {
               {isLoading ? 'Running...' : 'Run Playwright Code'}
             </button>
             {resultURL && (
-              <button 
+              <button
                 onClick={() => window.open(resultURL, '_blank')}
                 style={{ marginLeft: '10px' }}
               >
@@ -170,4 +170,4 @@ function SeleniumToPlaywrightPage() {
   );
 }
 
-export default SeleniumToPlaywrightPage;
+export default MobileDomToAppiumCode;
