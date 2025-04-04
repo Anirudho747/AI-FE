@@ -46,7 +46,6 @@ const GenerateManualTestCases = () => {
     setErrorMessage("");
     return true;
   };
-
   const generateTestCasesAndDownload = async () => {
     if (!validateFields()) return;
 
