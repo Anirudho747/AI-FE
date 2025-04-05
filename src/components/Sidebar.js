@@ -34,11 +34,6 @@ function Sidebar() {
                         Jira Story to TestCase
                     </Link>
                 </li>
-                <li className="sidebar-item">
-                    <Link to="/config" className="sidebar-link">
-                        Configuration
-                    </Link>
-                </li>
             </ul>
         </>
       )}

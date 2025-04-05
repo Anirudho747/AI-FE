@@ -115,27 +115,35 @@ const GenerateManualTestCases = () => {
         {errorMessage && <div ref={errorRef} className="error-message">{errorMessage}</div>}
 
         <div className={`form-group ${errors.applicationUrl ? "error" : ""}`}>
-          <label>Application URL:</label>
+          <h4>Application URL:</h4>
           <input
+              AceEditor
               type="text"
               value={applicationUrl}
+              width="100%"
               onChange={(e) => setApplicationUrl(e.target.value)}
               placeholder="Enter Application URL"
           />
         </div>
 
         <div className={`form-group ${errors.userStory ? "error" : ""}`}>
-          <label>User Story Description:</label>
-          <textarea
+          <h4>User Story Description:</h4>
+          <input
+              AceEditor
+              type="text"
               value={userStory}
+              width="100%"
               onChange={(e) => setUserStory(e.target.value)}
               placeholder="Enter user story description"
           />
         </div>
 
         <div className={`form-group ${errors.acceptanceCriteria ? "error" : ""}`}>
-          <label>Acceptance Criteria:</label>
-          <textarea
+          <h4>Acceptance Criteria:</h4>
+          <input
+              AceEditor
+              type="text"
+              width="100%"
               value={acceptanceCriteria}
               onChange={(e) => setAcceptanceCriteria(e.target.value)}
               placeholder="Enter acceptance criteria"
@@ -143,16 +151,7 @@ const GenerateManualTestCases = () => {
         </div>
 
         <div className="form-group">
-          <label>Epic Story Description (Optional):</label>
-          <textarea
-              value={epicStory}
-              onChange={(e) => setEpicStory(e.target.value)}
-              placeholder="Enter epic story description (optional)"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Test Type:</label>
+          <h4>Test Type:</h4>
           <div className="checkbox-group">
             <label>
               <input type="checkbox" checked={testType.positive} onChange={() => handleTestTypeChange("positive")} />

@@ -19,7 +19,6 @@ function App() {
             <Route path="/selenium-to-playwright" element={<SeleniumToPlaywrightPage />} />
             <Route path="/jiraStory-to-testcase" element={<JiraStoryToTestCase />} />
             <Route path="/dom-to-appiumcode" element={<DomToCode7 />} />
-            <Route path="/config" element={<ConfigPage />} />
             {/* Default route */}
             <Route path="/" element={<SwaggerToRestAssuredPage />} />
           </Routes>
