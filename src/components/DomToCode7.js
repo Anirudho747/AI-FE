@@ -1,95 +1,55 @@
 // src/components/UserStoryToManualTestcasePage.js
-import React, { useState } from 'react';
-import AceEditor from 'react-ace';
-import { FaExchangeAlt } from 'react-icons/fa';
-import 'ace-builds/src-noconflict/theme-textmate';
-import 'ace-builds/src-noconflict/mode-gherkin'; // For BDD user stories
-import 'ace-builds/src-noconflict/mode-text'; // For manual test cases
+import React, { useState } from "react";
 
-function DomToCode7() {
-  const [domElements, setDomElements] = useState('');
-  const [appiumCode, setAppiumCode] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [generationMessage, setGenerationMessage] = useState('');
+const GeneratePOM = () => {
+  const [htmlInput, setHtmlInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Convert Mobile Elements to Appium Code
-  async function handleGenerateAppiumCode() {
-    if (!domElements.trim()) {
-      alert('Please enter Selenium Code');
+  const generatePOMAndDownload = async () => {
+    if (!htmlInput.trim()) {
+      setErrorMessage("Please enter valid HTML elements.");
       return;
     }
+    setLoading(true);
+    setErrorMessage("");
 
-    setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/generate/manualTestcase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domElements }),
+      let response = await fetch("http://localhost:8080/api/pom/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ htmlContent: htmlInput })
       });
 
-      if (!response.ok) {
-        const errMsg = await response.text();
-        alert('Generation failed: ' + errMsg);
-        return;
-      }
+      if (!response.ok) throw new Error("Failed to generate POM");
 
-      const generated = await response.text();
-      setAppiumCode(generated);
-      setGenerationMessage('Appium Code generated successfully!');
-    } catch (err) {
-      console.error(err);
-      setGenerationMessage('Error generating Appium Code: ' + err);
+      let blob = await response.blob();
+      let url = window.URL.createObjectURL(blob);
+      let link = document.createElement("a");
+      link.href = url;
+      link.download = "GeneratedPOM.java";
+      link.click();
+    } catch (error) {
+      setErrorMessage(error.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }
+  };
 
   return (
-      <div className="main-content">
-        <h2>Mobile DOM to Appium Code Generation</h2>
-        <div className="editor-container">
-          <div className="editor-wrapper">
-            <h4>Mobile DOM Elements</h4>
-            <AceEditor
-                mode="gherkin"
-                theme="textmate"
-                name="domElementsEditor"
-                width="100%"
-                height="400px"
-                fontSize={14}
-                value={domElements}
-                onChange={(newValue) => setDomElements(newValue)}
-                editorProps={{ $blockScrolling: true }}
-                setOptions={{ useWorker: false }}
-            />
-          </div>
-          <div className="convert-icon" onClick={handleGenerateAppiumCode} title="Generate Appium Code">
-            <FaExchangeAlt size={30} color="#2c3e50" />
-          </div>
-          <div className="editor-wrapper">
-            <h4>Generated Appium Code</h4>
-            <AceEditor
-                mode="text"
-                theme="textmate"
-                name="TestcaseEditor"
-                width="100%"
-                height="400px"
-                fontSize={14}
-                value={appiumCode}
-                onChange={(newValue) => setAppiumCode(newValue)}
-                editorProps={{ $blockScrolling: true }}
-                setOptions={{ useWorker: false }}
-            />
-            <div style={{ marginTop: '10px' }}>
-              <button onClick={handleGenerateAppiumCode} disabled={isLoading}>
-                {isLoading ? 'Generating...' : 'Generate Appium Code'}
-              </button>
-            </div>
-            <div className="message">{generationMessage}</div>
-          </div>
-        </div>
+      <div className="container">
+        <h2>Generate POM Class from DOM Elements</h2>
+        {errorMessage && <div className="error">{errorMessage}</div>}
+        <textarea
+            value={htmlInput}
+            onChange={(e) => setHtmlInput(e.target.value)}
+            placeholder="Paste your HTML elements here..."
+        />
+        <button onClick={generatePOMAndDownload} disabled={loading}>
+          {loading ? "Generating & Downloading..." : "Generate & Download POM"}
+        </button>
       </div>
   );
-}
+};
 
-export default DomToCode7;
+export default GeneratePOM;
