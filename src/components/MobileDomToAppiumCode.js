@@ -1,173 +1,55 @@
-// src/components/MobileDomToAppiumCode.js
-import React, { useState } from 'react';
-import AceEditor from 'react-ace';
-import { FaExchangeAlt } from 'react-icons/fa';
-import 'ace-builds/src-noconflict/theme-textmate';
-import 'ace-builds/src-noconflict/mode-java';
-import 'ace-builds/src-noconflict/mode-typescript';
+// src/components/UserStoryToManualTestcasePage.js
+import React, { useState } from "react";
 
-function MobileDomToAppiumCode() {
-  const [mobileDom, setMobileDom] = useState('');
-  const [appiumCode, setAppiumCode] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [compileMessage, setCompileMessage] = useState('');
-  const [runMessage, setRunMessage] = useState('');
-  const [resultURL, setResultURL] = useState('');
+const GeneratePOM = () => {
+  const [htmlInput, setHtmlInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Convert Dom to Appium code
-  async function handleConvert() {
-    if (!mobileDom.trim()) {
-      alert('Please enter DOM Elemensts.');
+  const generatePOMAndDownload = async () => {
+    if (!htmlInput.trim()) {
+      setErrorMessage("Please enter valid HTML elements.");
       return;
     }
-    setIsLoading(true);
-     try {
-      const response = await fetch('http://localhost:8080/api/generate/manualTestcase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobileDom })
-      });
-      if (!response.ok) {
-        const errMsg = await response.text();
-        alert('Conversion failed: ' + errMsg);
-        return;
-      }
-      const converted = await response.text();
-       setAppiumCode(converted);
-    } catch (err) {
-      console.error(err);
-      alert('Error converting code: ' + err);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    setLoading(true);
+    setErrorMessage("");
 
-  // Compile Selenium code (stub endpoint)
-  async function handleCompileSelenium() {
-    if (!mobileDom.trim()) {
-      alert('Please enter Selenium code.');
-      return;
-    }
-    setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/convert/compileSelenium', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: mobileDom })
+      let response = await fetch("http://localhost:8080/api/pom/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ htmlContent: htmlInput })
       });
-      const message = await response.text();
-      setCompileMessage(message);
-    } catch (err) {
-      console.error(err);
-      setCompileMessage('Error compiling code: ' + err);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
- // Run Playwright code
-  async function handleRunPlaywright() {
-    if (!appiumCode.trim()) {
-      alert('Please convert code first.');
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost:8080/api/convert/runPlaywrightProxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: appiumCode, language: 'javascript' })
-      });
-      if (!response.ok) {
-        const errMsg = await response.text();
-        alert('Run failed: ' + errMsg);
-        return;
-      }
-      const result = await response.json();
-      setRunMessage(result.output);
-      
-      if (result.files && result.files.length > 0) {
-        // Extract the publicURL from the first file
-        let publicURL = result.files[0].publicURL;
-        // If the publicURL is relative, prefix with the domain
-        if (publicURL.startsWith("/")) {
-          publicURL = "https://try.playwright.tech" + publicURL;
-        }
-        // Build the final URL for trace viewer and URL-encode the publicURL
-        const finalURL = "https://trace.playwright.dev/?trace=" + encodeURIComponent(publicURL);
-        setResultURL(finalURL);
-      } else {
-        setResultURL('');
-      }
-    } catch (err) {
-      console.error(err);
-      setRunMessage('Error running code: ' + err);
+      if (!response.ok) throw new Error("Failed to generate POM");
+
+      let blob = await response.blob();
+      let url = window.URL.createObjectURL(blob);
+      let link = document.createElement("a");
+      link.href = url;
+      link.download = "GeneratedPOM.java";
+      link.click();
+    } catch (error) {
+      setErrorMessage(error.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="main-content">
-      <h2>Mobile DOM to Appium Code Conversion</h2>
-      <div className="editor-container">
-        <div className="editor-wrapper">
-          <h4>Mobile Dom Elements</h4>
-          <AceEditor
-            mode="java"
-            theme="textmate"
-            name="DOM Elements"
-            width="100%"
-            height="750px"
-            fontSize={14}
-            value={setMobileDom}
-            onChange={(newValue) => setMobileDom(newValue)}
-            editorProps={{ $blockScrolling: true }}
-            setOptions={{ useWorker: false }}
-          />
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={handleCompileSelenium} disabled={isLoading}>
-              {isLoading ? 'Compiling...' : 'Compile Selenium Code'}
-            </button>
-          </div>
-          <div className="message">{compileMessage}</div>
-        </div>
-
-        <div className="convert-icon" onClick={handleConvert} title="Generate Appium Code">
-          <FaExchangeAlt size={30} color="#2c3e50" />
-        </div>
-        <div className="editor-wrapper">
-          <h4>Appium Code</h4>
-          <AceEditor
-            mode="typescript"
-            theme="textmate"
-            name="Appium Editor"
-            width="100%"
-            height="750px"
-            fontSize={14}
-            value={appiumCode}
-            onChange={(newValue) => setAppiumCode(newValue)}
-            editorProps={{ $blockScrolling: true }}
-            setOptions={{ useWorker: false }}
-          />
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={handleRunPlaywright} disabled={isLoading}>
-              {isLoading ? 'Running...' : 'Run Playwright Code'}
-            </button>
-            {resultURL && (
-              <button
-                onClick={() => window.open(resultURL, '_blank')}
-                style={{ marginLeft: '10px' }}
-              >
-                View Results
-              </button>
-            )}
-          </div>
-          <div className="message">{runMessage}</div>
-        </div>
+      <div className="container">
+        <h2>Generate POM Class from DOM Elements</h2>
+        {errorMessage && <div className="error">{errorMessage}</div>}
+        <textarea
+            value={htmlInput}
+            onChange={(e) => setHtmlInput(e.target.value)}
+            placeholder="Paste your HTML elements here..."
+        />
+        <button onClick={generatePOMAndDownload} disabled={loading}>
+          {loading ? "Generating & Downloading..." : "Generate & Download POM"}
+        </button>
       </div>
-    </div>
   );
-}
+};
 
-export default MobileDomToAppiumCode;
+export default GeneratePOM;
