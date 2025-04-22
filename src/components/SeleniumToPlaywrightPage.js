@@ -126,11 +126,11 @@ function SeleniumToPlaywrightPage() {
             editorProps={{ $blockScrolling: true }}
             setOptions={{ useWorker: false }}
           />
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={handleCompileSelenium} disabled={isLoading}>
-              {isLoading ? 'Compiling...' : 'Compile Selenium Code'}
-            </button>
-          </div>
+          {/*<div style={{ marginTop: '10px' }}>*/}
+          {/*  <button onClick={handleCompileSelenium} disabled={isLoading}>*/}
+          {/*    {isLoading ? 'Compiling...' : 'Compile Selenium Code'}*/}
+          {/*  </button>*/}
+          {/*</div>*/}
           <div className="message">{compileMessage}</div>
         </div>
         <div className="convert-icon" onClick={handleConvert} title="Convert Selenium to Playwright">

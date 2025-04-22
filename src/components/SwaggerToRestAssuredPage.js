@@ -237,22 +237,6 @@ function GenerateCodePage() {
             setOptions={{ useWorker: false }}
           />
         </div>
-        <div style={{ marginTop: '10px' }}>
-          <button onClick={handleRunTests} disabled={isLoading}>
-            {isLoading ? 'Running...' : 'Run Tests'}
-          </button>
-          <button onClick={handleReset} style={{ marginLeft: '10px' }}>
-            Reset
-          </button>
-          <button onClick={() => setShowPushModal(true)} style={{ marginLeft: '10px' }}>
-            Push Code
-          </button>
-        </div>
-      </div>
-
-      <div className="section">
-        <h4>Test Results</h4>
-        <pre className="test-results">{testResults}</pre>
       </div>
 
       {showPushModal && (
