@@ -5,6 +5,8 @@ import SwaggerToRestAssuredPage from './components/SwaggerToRestAssuredPage';
 import SeleniumToPlaywrightPage from './components/SeleniumToPlaywrightPage';
 import JiraStoryToTestCase from "./components/JiraStoryToTestCase";
 import ConfigPage from './components/ConfigPage';
+import MobileDomToAppiumCode from "./components/MobileDomToAppiumCode";
+import DomToCode7 from "./components/DomToCode7";
 
 function App() {
   return (
@@ -16,7 +18,7 @@ function App() {
             <Route path="/generate" element={<SwaggerToRestAssuredPage />} />
             <Route path="/selenium-to-playwright" element={<SeleniumToPlaywrightPage />} />
             <Route path="/jiraStory-to-testcase" element={<JiraStoryToTestCase />} />
-            <Route path="/config" element={<ConfigPage />} />
+            <Route path="/dom-to-appiumcode" element={<DomToCode7 />} />
             {/* Default route */}
             <Route path="/" element={<SwaggerToRestAssuredPage />} />
           </Routes>

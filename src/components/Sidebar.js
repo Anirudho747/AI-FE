@@ -25,13 +25,13 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li className="sidebar-item">
-                    <Link to="/jiraStory-to-testcase" className="sidebar-link">
-                        Jira Story to TestCase
+                    <Link to="/dom-to-appiumcode" className="sidebar-link">
+                        Generate Mobile Automation Code
                     </Link>
                 </li>
                 <li className="sidebar-item">
-                    <Link to="/config" className="sidebar-link">
-                        Configuration
+                    <Link to="/jiraStory-to-testcase" className="sidebar-link">
+                        Jira Story to TestCase
                     </Link>
                 </li>
             </ul>

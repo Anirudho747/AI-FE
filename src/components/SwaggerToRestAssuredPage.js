@@ -5,7 +5,7 @@ import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/mode-java';
 import PushCodeModal from './PushCodeModal';
 
-function GenerateCodePage() {
+function GenerateCodePage() { 
   const [swaggerFile, setSwaggerFile] = useState(null);
   const [swaggerUrl, setSwaggerUrl] = useState('');
   const [apiDetails, setApiDetails] = useState('');
