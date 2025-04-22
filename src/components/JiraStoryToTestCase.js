@@ -1,95 +1,182 @@
-// src/components/UserStoryToManualTestcasePage.js
-import React, { useState } from 'react';
+import React, { useState, useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaInfoCircle } from "react-icons/fa";
 import AceEditor from 'react-ace';
-import { FaExchangeAlt } from 'react-icons/fa';
-import 'ace-builds/src-noconflict/theme-textmate';
-import 'ace-builds/src-noconflict/mode-gherkin'; // For BDD user stories
-import 'ace-builds/src-noconflict/mode-text'; // For manual test cases
 
-function JiraStoryToTestCase() {
-  const [userStory, setUserStory] = useState('');
-  const [manualTestcase, setManualTestcase] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [generationMessage, setGenerationMessage] = useState('');
+const GenerateManualTestCases = () => {
+  const [testType, setTestType] = useState({
+    positive: false,
+    negative: false,
+    edge: false,
+  });
+  const [applicationUrl, setApplicationUrl] = useState("");
+  const [userStory, setUserStory] = useState("");
+  const [acceptanceCriteria, setAcceptanceCriteria] = useState("");
+  const [epicStory, setEpicStory] = useState("");
+  const [additionalInstructions, setAdditionalInstructions] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState({});
+  const errorRef = useRef(null);
 
-  // Convert Jira Story to Test Case
-  async function handleGenerateTestcase() {
-    if (!userStory.trim()) {
-      alert('Please enter a user story.');
-      return;
+  const handleTestTypeChange = (type) => {
+    setTestType((prev) => ({ ...prev, [type]: !prev[type] }));
+  };
+
+  const validateFields = () => {
+    let newErrors = {};
+
+    if (!applicationUrl.trim()) newErrors.applicationUrl = true;
+    if (!userStory.trim()) newErrors.userStory = true;
+    if (!acceptanceCriteria.trim()) newErrors.acceptanceCriteria = true;
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setErrorMessage("Please fill in the required fields.");
+      setTimeout(() => {
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+      return false;
     }
 
-    setIsLoading(true);
+    setErrors({});
+    setErrorMessage("");
+    return true;
+  };
+  const generateTestCasesAndDownload = async () => {
+    if (!validateFields()) return;
+
+    setLoading(true);
+
     try {
-      const response = await fetch('http://localhost:8080/api/generate/manualTestcase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userStory }),
+      let response = await fetch("http://localhost:8080/api/generateTestCases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          testType,
+          userStoryDescription: userStory,
+          applicationUrl,
+          acceptanceCriteria,
+          epicDescription: epicStory,
+          additionalInstructions,
+        }),
       });
 
-      if (!response.ok) {
-        const errMsg = await response.text();
-        alert('Generation failed: ' + errMsg);
-        return;
-      }
+      if (!response.ok) throw new Error("Failed to generate test cases");
 
-      const generated = await response.text();
-      setManualTestcase(generated);
-      setGenerationMessage('Manual test case generated successfully!');
-    } catch (err) {
-      console.error(err);
-      setGenerationMessage('Error generating manual test case: ' + err);
+      let jsonResponse = await response.json();
+
+      let excelResponse = await fetch("http://localhost:8080/api/downloadTestCases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(jsonResponse),
+      });
+
+      if (!excelResponse.ok) throw new Error("Failed to convert test cases to Excel");
+
+      let blob = await excelResponse.blob();
+      let url = window.URL.createObjectURL(blob);
+      let link = document.createElement("a");
+      link.href = url;
+      link.download = "test_cases.xlsx";
+      link.click();
+
+      // Clear all inputs after successful generation
+      setTestType({ positive: false, negative: false, edge: false });
+      setApplicationUrl("");
+      setUserStory("");
+      setAcceptanceCriteria("");
+      setEpicStory("");
+      setAdditionalInstructions("");
+
+      setErrorMessage(""); // Clear any existing errors
+
+      // Show success toast
+      toast.success("Test case generation is successful!");
+    } catch (error) {
+      setErrorMessage(error.message);
+      setTimeout(() => {
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }
+  };
 
   return (
-      <div className="main-content">
-        <h2>Jira Story to Test Case Generation</h2>
-        <div className="editor-container">
-          <div className="editor-wrapper">
-            <h4>User Story (Gherkin)</h4>
-            <AceEditor
-                mode="gherkin"
-                theme="textmate"
-                name="userStoryEditor"
-                width="100%"
-                height="400px"
-                fontSize={14}
-                value={userStory}
-                onChange={(newValue) => setUserStory(newValue)}
-                editorProps={{ $blockScrolling: true }}
-                setOptions={{ useWorker: false }}
-            />
-          </div>
-          <div className="convert-icon" onClick={handleGenerateTestcase} title="Generate Test Case">
-            <FaExchangeAlt size={30} color="#2c3e50" />
-          </div>
-          <div className="editor-wrapper">
-            <h4>Generated Test Case</h4>
-            <AceEditor
-                mode="text"
-                theme="textmate"
-                name="TestcaseEditor"
-                width="100%"
-                height="400px"
-                fontSize={14}
-                value={manualTestcase}
-                onChange={(newValue) => setManualTestcase(newValue)}
-                editorProps={{ $blockScrolling: true }}
-                setOptions={{ useWorker: false }}
-            />
-            <div style={{ marginTop: '10px' }}>
-              <button onClick={handleGenerateTestcase} disabled={isLoading}>
-                {isLoading ? 'Generating...' : 'Generate Manual Test Case'}
-              </button>
-            </div>
-            <div className="message">{generationMessage}</div>
+      <div className="section generate-manual-testcases">
+        <h2>Generate Manual Test Cases</h2>
+
+        {errorMessage && <div ref={errorRef} className="error-message">{errorMessage}</div>}
+
+        <div className={`form-group ${errors.applicationUrl ? "error" : ""}`}>
+          <h4>Application URL:</h4>
+          <input
+              AceEditor
+              type="text"
+              value={applicationUrl}
+              width="100%"
+              onChange={(e) => setApplicationUrl(e.target.value)}
+              placeholder="Enter Application URL"
+          />
+        </div>
+
+        <div className={`form-group ${errors.userStory ? "error" : ""}`}>
+          <h4>User Story Description:</h4>
+          <input
+              AceEditor
+              type="text"
+              value={userStory}
+              width="100%"
+              onChange={(e) => setUserStory(e.target.value)}
+              placeholder="Enter user story description"
+          />
+        </div>
+
+        <div className={`form-group ${errors.acceptanceCriteria ? "error" : ""}`}>
+          <h4>Acceptance Criteria:</h4>
+          <input
+              AceEditor
+              type="text"
+              width="100%"
+              value={acceptanceCriteria}
+              onChange={(e) => setAcceptanceCriteria(e.target.value)}
+              placeholder="Enter acceptance criteria"
+          />
+        </div>
+
+        <div className="form-group">
+          <h4>Test Type:</h4>
+          <div className="checkbox-group">
+            <label>
+              <input type="checkbox" checked={testType.positive} onChange={() => handleTestTypeChange("positive")} />
+              Positive
+            </label>
+            <label>
+              <input type="checkbox" checked={testType.negative} onChange={() => handleTestTypeChange("negative")} />
+              Negative
+            </label>
+            <label>
+              <input type="checkbox" checked={testType.edge} onChange={() => handleTestTypeChange("edge")} />
+              Edge
+            </label>
           </div>
         </div>
+
+        <button onClick={generateTestCasesAndDownload} disabled={loading}>
+          {loading ? "Generating & Downloading..." : "Generate and Download Test Cases"}
+        </button>
+
+        {loading && <div className="spinner">Loading...</div>}
+
+        <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
       </div>
   );
-}
+};
 
-export default JiraStoryToTestCase;
+export default GenerateManualTestCases;

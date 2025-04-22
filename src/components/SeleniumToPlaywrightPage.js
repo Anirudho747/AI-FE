@@ -126,11 +126,6 @@ function SeleniumToPlaywrightPage() {
             editorProps={{ $blockScrolling: true }}
             setOptions={{ useWorker: false }}
           />
-          {/*<div style={{ marginTop: '10px' }}>*/}
-          {/*  <button onClick={handleCompileSelenium} disabled={isLoading}>*/}
-          {/*    {isLoading ? 'Compiling...' : 'Compile Selenium Code'}*/}
-          {/*  </button>*/}
-          {/*</div>*/}
           <div className="message">{compileMessage}</div>
         </div>
         <div className="convert-icon" onClick={handleConvert} title="Convert Selenium to Playwright">
@@ -150,20 +145,20 @@ function SeleniumToPlaywrightPage() {
             editorProps={{ $blockScrolling: true }}
             setOptions={{ useWorker: false }}
           />
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={handleRunPlaywright} disabled={isLoading}>
-              {isLoading ? 'Running...' : 'Run Playwright Code'}
-            </button>
-            {resultURL && (
-              <button 
-                onClick={() => window.open(resultURL, '_blank')}
-                style={{ marginLeft: '10px' }}
-              >
-                View Results
-              </button>
-            )}
-          </div>
-          <div className="message">{runMessage}</div>
+          {/*<div style={{ marginTop: '10px' }}>*/}
+          {/*  <button onClick={handleRunPlaywright} disabled={isLoading}>*/}
+          {/*    {isLoading ? 'Running...' : 'Run Playwright Code'}*/}
+          {/*  </button>*/}
+          {/*  {resultURL && (*/}
+          {/*    <button */}
+          {/*      onClick={() => window.open(resultURL, '_blank')}*/}
+          {/*      style={{ marginLeft: '10px' }}*/}
+          {/*    >*/}
+          {/*      View Results*/}
+          {/*    </button>*/}
+          {/*  )}*/}
+          {/*</div>*/}
+          {/*<div className="message">{runMessage}</div>*/}
         </div>
       </div>
     </div>
