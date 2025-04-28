@@ -5,7 +5,7 @@ import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/mode-java';
 import PushCodeModal from './PushCodeModal';
 
-function GenerateCodePage() { 
+function GenerateCodePage() {
   const [swaggerFile, setSwaggerFile] = useState(null);
   const [swaggerUrl, setSwaggerUrl] = useState('');
   const [apiDetails, setApiDetails] = useState('');
@@ -160,110 +160,106 @@ function GenerateCodePage() {
   }
 
   return (
-    <div className="main-content">
-      <h2>Generate Rest-Assured Code</h2>
+      <div className="main-content">
+        <h2>Generate Rest-Assured Code</h2>
 
-      <div className="section">
-        <label>Upload Swagger File: </label>
-        <input
-          type="file"
-          ref={fileInputRef}
-          accept=".yml,.yaml,.json"
-          onChange={(e) => setSwaggerFile(e.target.files[0])}
-        />
-        <br />
-        <button onClick={handleParseSwagger} disabled={isLoading}>
-          {isLoading ? 'Parsing...' : 'Parse Swagger'}
-        </button>
-      </div>
-      <div className="section">
-        <h4>Parsed API Details</h4>
-        <textarea
-          rows="5"
-          style={{ width: '100%' }}
-          value={apiDetails}
-          onChange={(e) => setApiDetails(e.target.value)}
-        />
-        <br /><br />
-        <label>Test Type: </label>
-        <div className="test-type-container">
-          <label className="test-type-label">
-            <input
-              type="checkbox"
-              name="positive"
-              checked={testTypes.positive}
-              onChange={handleTestTypeChange}
-            />
-            Positive
-          </label>
-          <label className="test-type-label">
-            <input
-              type="checkbox"
-              name="negative"
-              checked={testTypes.negative}
-              onChange={handleTestTypeChange}
-            />
-            Negative
-          </label>
-          <label className="test-type-label">
-            <input
-              type="checkbox"
-              name="edge"
-              checked={testTypes.edge}
-              onChange={handleTestTypeChange}
-            />
-            Edge
-          </label>
-        </div>
-        <br />
-        <button onClick={handleGenerateTests} disabled={isLoading}>
-          {isLoading ? 'Generating...' : 'Generate Tests'}
-        </button>
-      </div>
-      {isLoading && <div className="loading-spinner"></div>}
-      <div className="section">
-        <h4>Generated Java Code</h4>
-        <div className="code-editor">
-          <AceEditor
-            mode="java"
-            theme="textmate"
-            name="javaEditor"
-            width="100%"
-            height="300px"
-            fontSize={14}
-            value={javaCode}
-            onChange={(newValue) => setJavaCode(newValue)}
-            editorProps={{ $blockScrolling: true }}
-            setOptions={{ useWorker: false }}
+        <div className="section">
+          <label>Upload Swagger File: </label>
+          <input
+              type="file"
+              ref={fileInputRef}
+              accept=".yml,.yaml,.json"
+              onChange={(e) => setSwaggerFile(e.target.files[0])}
           />
-        </div>
-        <div style={{ marginTop: '10px' }}>
-          <button onClick={handleRunTests} disabled={isLoading}>
-            {isLoading ? 'Running...' : 'Run Tests'}
-          </button>
-          <button onClick={handleReset} style={{ marginLeft: '10px' }}>
-            Reset
-          </button>
-          <button onClick={() => setShowPushModal(true)} style={{ marginLeft: '10px' }}>
-            Push Code
+          <br/>
+          <button onClick={handleParseSwagger} disabled={isLoading}>
+            {isLoading ? 'Parsing...' : 'Parse Swagger'}
           </button>
         </div>
+        <div className="section">
+          <h4>Parsed API Details</h4>
+          <textarea
+              rows="5"
+              style={{width: '100%'}}
+              value={apiDetails}
+              onChange={(e) => setApiDetails(e.target.value)}
+          />
+          <br/><br/>
+          <label>Test Type: </label>
+          <div className="test-type-container">
+            <label className="test-type-label">
+              <input
+                  type="checkbox"
+                  name="positive"
+                  checked={testTypes.positive}
+                  onChange={handleTestTypeChange}
+              />
+              Positive
+            </label>
+            <label className="test-type-label">
+              <input
+                  type="checkbox"
+                  name="negative"
+                  checked={testTypes.negative}
+                  onChange={handleTestTypeChange}
+              />
+              Negative
+            </label>
+            <label className="test-type-label">
+              <input
+                  type="checkbox"
+                  name="edge"
+                  checked={testTypes.edge}
+                  onChange={handleTestTypeChange}
+              />
+              Edge
+            </label>
+          </div>
+          <br/>
+          <button onClick={handleGenerateTests} disabled={isLoading}>
+            {isLoading ? 'Generating...' : 'Generate Tests'}
+          </button>
+        </div>
+        {isLoading && <div className="loading-spinner"></div>}
+        <div className="section">
+          <h4>Generated Java Code</h4>
+          <div className="code-editor">
+            <AceEditor
+                mode="java"
+                theme="textmate"
+                name="javaEditor"
+                width="100%"
+                height="300px"
+                fontSize={14}
+                value={javaCode}
+                onChange={(newValue) => setJavaCode(newValue)}
+                editorProps={{$blockScrolling: true}}
+                setOptions={{useWorker: false}}
+            />
+          </div>
+        </div>
+
+        <button
+            style={{marginTop: '10px'}}
+            onClick={() => {
+              navigator.clipboard.writeText(javaCode)
+                  .then(() => alert("✅ Code copied to clipboard!"))
+                  .catch(() => alert("❌ Failed to copy code."));
+            }}
+        >
+          📋 Copy Code
+        </button>
+
+
+        {showPushModal && (
+            <PushCodeModal
+                isOpen={showPushModal}
+                onClose={() => setShowPushModal(false)}
+                onPush={handlePushCode}
+            />
+        )}
+
       </div>
-
-      <div className="section">
-        <h4>Test Results</h4>
-        <pre className="test-results">{testResults}</pre>
-      </div>
-
-      {showPushModal && (
-        <PushCodeModal
-          isOpen={showPushModal}
-          onClose={() => setShowPushModal(false)}
-          onPush={handlePushCode}
-        />
-      )}
-
-    </div>
   );
 }
 

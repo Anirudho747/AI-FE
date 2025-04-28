@@ -9,10 +9,10 @@ import 'ace-builds/src-noconflict/mode-typescript';
 function SeleniumToPlaywrightPage() {
   const [seleniumCode, setSeleniumCode] = useState('');
   const [playwrightCode, setPlaywrightCode] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [setIsLoading] = useState(false);
   const [compileMessage, setCompileMessage] = useState('');
-  const [runMessage, setRunMessage] = useState('');
-  const [resultURL, setResultURL] = useState('');
+  const [setRunMessage] = useState('');
+  const [setResultURL] = useState('');
 
   // Convert Selenium code to Playwright code
   async function handleConvert() {
@@ -21,7 +21,7 @@ function SeleniumToPlaywrightPage() {
       return;
     }
     setIsLoading(true);
-     try {
+    try {
       const response = await fetch('http://localhost:8080/api/convert/seleniumToPlaywright', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,7 +65,7 @@ function SeleniumToPlaywrightPage() {
     }
   }
 
- // Run Playwright code
+  // Run Playwright code
   async function handleRunPlaywright() {
     if (!playwrightCode.trim()) {
       alert('Please convert code first.');
@@ -85,7 +85,7 @@ function SeleniumToPlaywrightPage() {
       }
       const result = await response.json();
       setRunMessage(result.output);
-      
+
       if (result.files && result.files.length > 0) {
         // Extract the publicURL from the first file
         let publicURL = result.files[0].publicURL;
@@ -109,64 +109,56 @@ function SeleniumToPlaywrightPage() {
 
 
   return (
-    <div className="main-content">
-      <h2>Selenium to Playwright Conversion</h2>
-      <div className="editor-container">
-        <div className="editor-wrapper">
-          <h4>Selenium Java Code</h4>
-          <AceEditor
-            mode="java"
-            theme="textmate"
-            name="seleniumEditor"
-            width="100%"
-            height="750px"
-            fontSize={14}
-            value={seleniumCode}
-            onChange={(newValue) => setSeleniumCode(newValue)}
-            editorProps={{ $blockScrolling: true }}
-            setOptions={{ useWorker: false }}
-          />
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={handleCompileSelenium} disabled={isLoading}>
-              {isLoading ? 'Compiling...' : 'Compile Selenium Code'}
+      <div className="main-content">
+        <h2>Selenium to Playwright Conversion</h2>
+        <div className="editor-container">
+          <div className="editor-wrapper">
+            <h4>Selenium Java Code</h4>
+            <AceEditor
+                mode="java"
+                theme="textmate"
+                name="seleniumEditor"
+                width="100%"
+                height="750px"
+                fontSize={14}
+                value={seleniumCode}
+                onChange={(newValue) => setSeleniumCode(newValue)}
+                editorProps={{$blockScrolling: true}}
+                setOptions={{useWorker: false}}
+            />
+            <div className="message">{compileMessage}</div>
+          </div>
+          <div className="convert-icon" onClick={handleConvert} title="Convert Selenium to Playwright">
+            <FaExchangeAlt size={30} color="#2c3e50"/>
+          </div>
+          <div className="editor-wrapper">
+            <h4>Playwright TypeScript Code</h4>
+            <AceEditor
+                mode="typescript"
+                theme="textmate"
+                name="playwrightEditor"
+                width="100%"
+                height="750px"
+                fontSize={14}
+                value={playwrightCode}
+                onChange={(newValue) => setPlaywrightCode(newValue)}
+                editorProps={{$blockScrolling: true}}
+                setOptions={{useWorker: false}}
+            />
+            <button
+                style={{marginTop: '10px', alignSelf: 'flex-end'}}
+                onClick={() => {
+                  navigator.clipboard.writeText(playwrightCode)
+                      .then(() => alert("✅ Playwright code copied to clipboard!"))
+                      .catch(() => alert("❌ Failed to copy code."));
+                }}
+            >
+              📋 Copy Code
             </button>
           </div>
-          <div className="message">{compileMessage}</div>
-        </div>
-        <div className="convert-icon" onClick={handleConvert} title="Convert Selenium to Playwright">
-          <FaExchangeAlt size={30} color="#2c3e50" />
-        </div>
-        <div className="editor-wrapper">
-          <h4>Playwright TypeScript Code</h4>
-          <AceEditor
-            mode="typescript"
-            theme="textmate"
-            name="playwrightEditor"
-            width="100%"
-            height="750px"
-            fontSize={14}
-            value={playwrightCode}
-            onChange={(newValue) => setPlaywrightCode(newValue)}
-            editorProps={{ $blockScrolling: true }}
-            setOptions={{ useWorker: false }}
-          />
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={handleRunPlaywright} disabled={isLoading}>
-              {isLoading ? 'Running...' : 'Run Playwright Code'}
-            </button>
-            {resultURL && (
-              <button 
-                onClick={() => window.open(resultURL, '_blank')}
-                style={{ marginLeft: '10px' }}
-              >
-                View Results
-              </button>
-            )}
-          </div>
-          <div className="message">{runMessage}</div>
         </div>
       </div>
-    </div>
+
   );
 }
 

@@ -7,6 +7,7 @@ import JiraStoryToTestCase from "./components/JiraStoryToTestCase";
 import ConfigPage from './components/ConfigPage';
 import MobileDomToAppiumCode from "./components/MobileDomToAppiumCode";
 import DomToCode7 from "./components/DomToCode7";
+import GenerateTestFromDesign from "./components/GenerateTestFromDesign";
 
 function App() {
   return (
@@ -17,8 +18,9 @@ function App() {
           <Routes>
             <Route path="/generate" element={<SwaggerToRestAssuredPage />} />
             <Route path="/selenium-to-playwright" element={<SeleniumToPlaywrightPage />} />
-            <Route path="/jiraStory-to-testcase" element={<JiraStoryToTestCase />} />
+            {/*<Route path="/jiraStory-to-testcase" element={<JiraStoryToTestCase />} />*/}
             <Route path="/dom-to-appiumcode" element={<DomToCode7 />} />
+            <Route path="/description-to-testcase" element={<GenerateTestFromDesign />} />
             {/* Default route */}
             <Route path="/" element={<SwaggerToRestAssuredPage />} />
           </Routes>
