@@ -29,11 +29,6 @@ function Sidebar() {
                         Generate Mobile Automation Code
                     </Link>
                 </li>
-                {/*<li className="sidebar-item">*/}
-                {/*    <Link to="/jiraStory-to-testcase" className="sidebar-link">*/}
-                {/*        Website Link to TestCase*/}
-                {/*    </Link>*/}
-                {/*</li>*/}
                 <li className="sidebar-item">
                     <Link to="/description-to-testcase" className="sidebar-link">
                         Jira Story to TestCase

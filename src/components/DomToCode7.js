@@ -56,8 +56,8 @@ const GeneratePOM = () => {
             <select style={{ width: '250px', height: '40px' }} value={platform} onChange={(e) => setPlatform(e.target.value)}>
                 <option value="ANDROID">Android Only</option>
                 <option value="IOS">iOS Only</option>
-                <option value="CROSS_PLATFORM">Cross-platform (PageFactory)</option>
-                <option value="DYNAMIC_RUNTIME">Dynamic Locator (Runtime logic)</option>
+                <option value="CROSS_PLATFORM">Cross-platform (Static)</option>
+                <option value="DYNAMIC_RUNTIME">Cross-Platform (Dynamic)</option>
             </select>
             </div>
 

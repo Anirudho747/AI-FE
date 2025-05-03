@@ -18,7 +18,6 @@ function App() {
           <Routes>
             <Route path="/generate" element={<SwaggerToRestAssuredPage />} />
             <Route path="/selenium-to-playwright" element={<SeleniumToPlaywrightPage />} />
-            {/*<Route path="/jiraStory-to-testcase" element={<JiraStoryToTestCase />} />*/}
             <Route path="/dom-to-appiumcode" element={<DomToCode7 />} />
             <Route path="/description-to-testcase" element={<GenerateTestFromDesign />} />
             {/* Default route */}
