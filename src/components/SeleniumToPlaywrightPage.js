@@ -9,36 +9,41 @@ import 'ace-builds/src-noconflict/mode-typescript';
 function SeleniumToPlaywrightPage() {
   const [seleniumCode, setSeleniumCode] = useState('');
   const [playwrightCode, setPlaywrightCode] = useState('');
-  const [setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [compileMessage, setCompileMessage] = useState('');
-  const [setRunMessage] = useState('');
-  const [setResultURL] = useState('');
+  const [runMessage, setRunMessage] = useState('');
+  const [resultURL, setResultURL] = useState('');
 
   // Convert Selenium code to Playwright code
   async function handleConvert() {
-    if (!seleniumCode.trim()) {
-      alert('Please enter Selenium code.');
-      return;
-    }
-    setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/convert/seleniumToPlaywright', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ seleniumCode })
-      });
-      if (!response.ok) {
-        const errMsg = await response.text();
-        alert('Conversion failed: ' + errMsg);
+      console.log("typeof setIsLoading:", typeof setIsLoading);
+      if (!seleniumCode.trim()) {
+        alert('Please enter Selenium code.');
         return;
       }
-      const converted = await response.text();
-      setPlaywrightCode(converted);
-    } catch (err) {
+        setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:8080/api/convert/seleniumToPlaywright', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({seleniumCode})
+        });
+        if (!response.ok) {
+          const errMsg = await response.text();
+          alert('Conversion failed: ' + errMsg);
+          return;
+        }
+        const converted = await response.text();
+        setPlaywrightCode(converted);
+      } catch (err) {
+        console.error(err);
+        alert('Error converting code: ' + err);
+      } finally {
+        setIsLoading(false);
+      }
+    }catch(err) {
       console.error(err);
-      alert('Error converting code: ' + err);
-    } finally {
-      setIsLoading(false);
     }
   }
 
