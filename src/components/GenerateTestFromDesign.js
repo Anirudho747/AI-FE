@@ -50,7 +50,7 @@ function GenerateTestFromDesign() {
 
     return (
         <div className="main-content">
-            <h2>Generate Test Cases from Design</h2>
+            <h2>Generate Test Cases from Jira Description</h2>
 
             <div className="form-group">
                 <label>Description / Ticket Details:</label>
