@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const GeneratePOM = () => {
     const [xmlInput, setXmlInput] = useState("");
     const [platform, setPlatform] = useState("DYNAMIC_RUNTIME");
-    const [className, setClassName] = useState("LoginPage");
+    const [className, setClassName] = useState("TestPage");
     const [packageName, setPackageName] = useState("com.mobile.pages");
     const [baseClassName, setBaseClassName] = useState("MobileBase");
     const [loading, setLoading] = useState(false);
