@@ -3,73 +3,106 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function GenerateTestFromDesign() {
     const [description, setDescription] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [bddOutput, setBddOutput] = useState('');
+    const [tddOutput, setTddOutput] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    // Updated method to Generate and Download
-    const generateAndDownloadTestCases = async () => {
+    const handleGenerate = async () => {
         if (!description.trim()) {
-            alert('Please enter a description.');
+            setErrorMessage('Please enter a screen description.');
             return;
         }
-        setIsLoading(true);
+
+        setLoading(true);
+        setErrorMessage('');
+        setBddOutput('');
+        setTddOutput('');
+
         try {
             const response = await fetch('http://localhost:8080/api/design/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description })
+                body: JSON.stringify({ description }),
             });
 
             if (!response.ok) {
-                const errorMsg = await response.text();
-                alert('❌ Failed to generate test cases: ' + errorMsg);
-                return;
+                const error = await response.text();
+                throw new Error(error);
             }
 
-            const textData = await response.text();
-
-            // 🎯 Create a Blob and trigger download
-            const blob = new Blob([textData], { type: 'text/plain;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'test_cases.txt';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-
-            // ✅ Optional success notification
-            alert('✅ Test cases generated and downloaded successfully!');
-        } catch (err) {
-            console.error(err);
-            alert('❌ Error: ' + err.message);
+            const result = await response.json();
+            setBddOutput(result.bdd || '');
+            setTddOutput(result.tdd || '');
+        } catch (error) {
+            console.error('Error:', error);
+            setErrorMessage(error.message || 'Failed to generate test cases.');
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
-    return (
-        <div className="main-content">
-            <h2>Generate Test Cases from Jira Description</h2>
+    const handleDownload = (content, filename) => {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+    };
 
-            <div className="form-group">
-                <label>Description / Ticket Details:</label>
+    return (
+        <div className="container" style={{ marginBottom: '200px' }}>
+            <h2>Generate Tests from Jira Story</h2>
+
+            <div style={{ marginBottom: '20px' }}>
+                <label>Screen Description:</label>
                 <textarea
-                    rows="8"
+                    rows={6}
                     style={{ width: '100%' }}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Paste your ticket description here..."
+                    placeholder="E.g., User sees a login form with username, password and login button..."
                 />
             </div>
 
-            <button onClick={generateAndDownloadTestCases} disabled={isLoading}>
-                {isLoading ? 'Generating...' : 'Generate and Download Test Cases'}
+            <button
+                style={{ width: '100%', height: '40px' }}
+                onClick={handleGenerate}
+                disabled={loading}
+            >
+                {loading ? 'Generating...' : 'Generate Test Cases'}
             </button>
 
-            {isLoading && <div className="loading-spinner"></div>}
+            {errorMessage && (
+                <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>
+            )}
+
+            {bddOutput && (
+                <>
+                    <h3>🟩 BDD Style Output:</h3>
+                    <pre style={{ background: '#f4f4f4', padding: '10px' }}>{bddOutput}</pre>
+                    <button
+                        style={{ marginRight: '10px' }}
+                        onClick={() => handleDownload(bddOutput, 'BDD_TestCases.txt')}
+                    >
+                        📥 Download BDD Test Cases
+                    </button>
+                </>
+            )}
+
+            {tddOutput && (
+                <>
+                    <h3>🧪 TDD Style Output (JUnit):</h3>
+                    <pre style={{ background: '#f4f4f4', padding: '10px' }}>{tddOutput}</pre>
+                    <button onClick={() => handleDownload(tddOutput, 'TDD_TestCases.java')}>
+                        📥 Download TDD Test Cases
+                    </button>
+                </>
+            )}
         </div>
     );
-}
+};
 
 export default GenerateTestFromDesign;
