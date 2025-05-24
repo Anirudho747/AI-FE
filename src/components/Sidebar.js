@@ -15,8 +15,18 @@ function Sidebar() {
           <h2>GenAI Automation</h2>
             <ul>
                 <li className="sidebar-item">
+                    <Link to="/dom-to-appiumcode" className="sidebar-link">
+                        Generate Mobile Automation Code
+                    </Link>
+                </li>
+                <li className="sidebar-item">
                     <Link to="/generate" className="sidebar-link">
                         Swagger to RestAssured
+                    </Link>
+                </li>
+                <li className="sidebar-item">
+                    <Link to="/description-to-testcase" className="sidebar-link">
+                        Jira Story to TestCase
                     </Link>
                 </li>
                 <li className="sidebar-item">
@@ -25,13 +35,8 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li className="sidebar-item">
-                    <Link to="/dom-to-appiumcode" className="sidebar-link">
-                        Generate Mobile Automation Code
-                    </Link>
-                </li>
-                <li className="sidebar-item">
-                    <Link to="/description-to-testcase" className="sidebar-link">
-                        Jira Story to TestCase
+                    <Link to="/ConfigurationTab" className="sidebar-link">
+                        Configure Your LLM
                     </Link>
                 </li>
             </ul>

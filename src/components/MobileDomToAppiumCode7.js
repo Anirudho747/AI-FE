@@ -1,4 +1,12 @@
-import React, { useState } from "react";
+// GeneratePOM.js
+import React, { useState, useEffect } from "react";
+
+const providerApiMap = {
+    openai: "https://api.openai.com/v1/chat/completions",
+    groq: "https://api.groq.com/openai/v1/chat/completions",
+    gemini: "https://generativelanguage.googleapis.com/v1beta/models",
+    claude: "https://api.anthropic.com/v1/messages",
+};
 
 const GeneratePOM = () => {
     const [xmlInput, setXmlInput] = useState("");
@@ -9,11 +17,34 @@ const GeneratePOM = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    const [llmApiKey, setLlmApiKey] = useState("");
+    const [llmModel, setLlmModel] = useState("");
+    const [llmApiUrl, setLlmApiUrl] = useState("");
+    const [llmProvider, setLlmProvider] = useState("");
+
+    // On mount, load LLM config
+    useEffect(() => {
+        const savedConfig = localStorage.getItem("llmConfig");
+        if (savedConfig) {
+            const { apiKey, model, provider } = JSON.parse(savedConfig);
+            const apiUrl = providerApiMap[provider];
+            setLlmApiKey(apiKey);
+            setLlmModel(model);
+            setLlmApiUrl(apiUrl);
+            setLlmProvider(provider);
+        }
+    }, []);
+
     const generatePOMAndDownload = async () => {
         if (!xmlInput.trim()) {
             setErrorMessage("Please paste your Appium XML content.");
             return;
         }
+        if (!llmApiUrl || !llmApiKey || !llmModel) {
+            setErrorMessage("Please configure your LLM provider and API key first.");
+            return;
+        }
+
         setLoading(true);
         setErrorMessage("");
 
@@ -27,6 +58,9 @@ const GeneratePOM = () => {
                     className,
                     packageName,
                     baseClassName,
+                    llmApiKey,
+                    llmModel,
+                    llmApiUrl,
                 }),
             });
 
@@ -52,65 +86,63 @@ const GeneratePOM = () => {
             {errorMessage && <div style={{ marginBottom: '20px' }} className="error">{errorMessage}</div>}
 
             <div style={{ marginBottom: '20px' }}>
-            <label style={{ padding: '50px'}}>Locator Strategy:</label>
-            <select style={{ width: '250px', height: '40px' }} value={platform} onChange={(e) => setPlatform(e.target.value)}>
-                <option value="ANDROID">Android Only</option>
-                <option value="IOS">iOS Only</option>
-                <option value="CROSS_PLATFORM">Cross-platform (Static)</option>
-                <option value="DYNAMIC_RUNTIME">Cross-Platform (Dynamic)</option>
-            </select>
+                <label style={{ padding: '50px'}}>Locator Strategy:</label>
+                <select style={{ width: '250px', height: '40px' }} value={platform} onChange={(e) => setPlatform(e.target.value)}>
+                    <option value="ANDROID">Android Only</option>
+                    <option value="IOS">iOS Only</option>
+                    <option value="CROSS_PLATFORM">Cross-platform (Static)</option>
+                    <option value="DYNAMIC_RUNTIME">Cross-Platform (Dynamic)</option>
+                </select>
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-            <label style={{ padding: '65px'}}>Class Name:</label>
-            <input
-                type="text"
-                value={className}
-                style={{ width: '230px', height: '20px' }}
-                onChange={(e) => setClassName(e.target.value)}
-                placeholder="LoginPage"
-            />
+                <label style={{ padding: '65px'}}>Class Name:</label>
+                <input
+                    type="text"
+                    value={className}
+                    style={{ width: '230px', height: '20px' }}
+                    onChange={(e) => setClassName(e.target.value)}
+                    placeholder="LoginPage"
+                />
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-            <label style={{ padding: '54px'}}>Package Name:</label>
-            <input
-                type="text"
-                value={packageName}
-                onChange={(e) => setPackageName(e.target.value)}
-                style={{ width: '230px', height: '20px' }}
-                placeholder="com.mobile.pages"
-            />
+                <label style={{ padding: '54px'}}>Package Name:</label>
+                <input
+                    type="text"
+                    value={packageName}
+                    onChange={(e) => setPackageName(e.target.value)}
+                    style={{ width: '230px', height: '20px' }}
+                    placeholder="com.mobile.pages"
+                />
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-                <>
-                    <label style={{ padding: '9px'}}>Base Class Name (optional):</label>
-                    <input
-                        type="text"
-                        value={baseClassName}
-                        onChange={(e) => setBaseClassName(e.target.value)}
-                        style={{ width: '230px', height: '20px' }}
-                        placeholder="MobileBase"
-                    />
-                </>
+                <label style={{ padding: '9px'}}>Base Class Name (optional):</label>
+                <input
+                    type="text"
+                    value={baseClassName}
+                    onChange={(e) => setBaseClassName(e.target.value)}
+                    style={{ width: '230px', height: '20px' }}
+                    placeholder="MobileBase"
+                />
             </div>
 
-            <div style={{display: 'flex', alignItems: 'center',marginBottom: '40px'}}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
                 <label style={{ padding: '8px'}}>Paste Appium XML Content:</label>
                 <textarea
                     value={xmlInput}
                     onChange={(e) => setXmlInput(e.target.value)}
                     placeholder="Paste Appium Inspector XML here..."
                     rows={15}
-                    style={{width: '415px', height: '200px'}}
+                    style={{ width: '415px', height: '200px' }}
                 />
             </div>
 
-            <div >
+            <div>
                 <button style={{ width: '650px', height: '40px' }} onClick={generatePOMAndDownload} disabled={loading}>
-                {loading ? "Generating..." : "Generate & Download POM"}
-            </button>
+                    {loading ? "Generating..." : "Generate & Download POM"}
+                </button>
             </div>
         </div>
     );
