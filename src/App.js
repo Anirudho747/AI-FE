@@ -3,10 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import SwaggerToRestAssuredPage from './components/SwaggerToRestAssuredPage';
 import SeleniumToPlaywrightPage from './components/SeleniumToPlaywrightPage';
-import JiraStoryToTestCase from "./components/JiraStoryToTestCase";
 import ConfigPage from './components/ConfigPage';
-import MobileDomToAppiumCode from "./components/MobileDomToAppiumCode";
-import DomToCode7 from "./components/DomToCode7";
+import DomToCode7 from "./components/MobileDomToAppiumCode7";
 import GenerateTestFromDesign from "./components/GenerateTestFromDesign";
 
 function App() {
