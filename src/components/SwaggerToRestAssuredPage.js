@@ -1,4 +1,3 @@
-// src/components/GenerateCodePage.js
 import React, { useState, useRef } from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/theme-textmate';
@@ -70,20 +69,53 @@ function GenerateCodePage() {
       alert('No API details found. Parse the Swagger first.');
       return;
     }
+
+    const savedConfig = JSON.parse(localStorage.getItem('llmConfig'));
+    if (!savedConfig || !savedConfig.apiKey || !savedConfig.model || !savedConfig.provider) {
+      alert('⚠️ Please configure your LLM provider and API key in the Configuration tab.');
+      return;
+    }
+
+    // Determine API URL from provider
+    const providerApiUrls = {
+      openai: 'https://api.openai.com/v1/chat/completions',
+      groq: 'https://api.groq.com/openai/v1/chat/completions',
+      gemini: 'https://generativelanguage.googleapis.com/v1beta/models',
+      claude: 'https://api.anthropic.com/v1/messages',
+    };
+
+    const llmApiUrl = providerApiUrls[savedConfig.provider] || '';
+    const llmApiKey = savedConfig.apiKey;
+    const llmModel = savedConfig.model;
+
+    if (!llmApiUrl) {
+      alert('Unsupported LLM provider selected.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const selectedTestTypes = Object.keys(testTypes).filter((key) => testTypes[key]);
-      const requestBody = { apiDetails, testTypes: selectedTestTypes };
+      const requestBody = {
+        apiDetails,
+        testTypes: selectedTestTypes,
+        llmApiKey,
+        llmApiUrl,
+        llmModel
+      };
+
       const response = await fetch('http://localhost:8080/api/generateTests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       });
+
       if (!response.ok) {
-        let errMsg = await response.text();
+        const errMsg = await response.text();
         alert('Generate Tests failed: ' + errMsg);
         return;
       }
+
       const code = await response.text();
       setJavaCode(code);
     } catch (err) {
