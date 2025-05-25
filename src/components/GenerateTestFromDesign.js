@@ -14,6 +14,29 @@ function GenerateTestFromDesign() {
             return;
         }
 
+        // ✅ Validate LLM Configuration
+        const savedConfig = JSON.parse(localStorage.getItem("llmConfig"));
+        if (!savedConfig || !savedConfig.apiKey || !savedConfig.model || !savedConfig.provider) {
+            setErrorMessage("⚠️ Please configure your LLM provider and API key in the Configuration tab.");
+            return;
+        }
+
+        const providerApiUrls = {
+            openai: 'https://api.openai.com/v1/chat/completions',
+            groq: 'https://api.groq.com/openai/v1/chat/completions',
+            gemini: 'https://generativelanguage.googleapis.com/v1beta/models',
+            claude: 'https://api.anthropic.com/v1/messages',
+        };
+
+        const llmApiUrl = providerApiUrls[savedConfig.provider];
+        const llmApiKey = savedConfig.apiKey;
+        const llmModel = savedConfig.model;
+
+        if (!llmApiKey || !llmModel || !llmApiUrl) {
+            setErrorMessage('⚠️ Please configure your LLM provider and API key first.');
+            return;
+        }
+
         setLoading(true);
         setErrorMessage('');
         setBddOutput('');
@@ -23,7 +46,12 @@ function GenerateTestFromDesign() {
             const response = await fetch('http://localhost:8080/api/design/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description }),
+                body: JSON.stringify({
+                    description,
+                    llmApiKey,
+                    llmModel,
+                    llmApiUrl
+                }),
             });
 
             if (!response.ok) {
@@ -103,6 +131,6 @@ function GenerateTestFromDesign() {
             )}
         </div>
     );
-};
+}
 
 export default GenerateTestFromDesign;
