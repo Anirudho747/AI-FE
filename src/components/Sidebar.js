@@ -15,6 +15,11 @@ function Sidebar() {
           <h2>GenAI Automation</h2>
             <ul>
                 <li className="sidebar-item">
+                    <Link to="/ConfigurationTab" className="sidebar-link">
+                        Configure Your LLM
+                    </Link>
+                </li>
+                <li className="sidebar-item">
                     <Link to="/dom-to-appiumcode" className="sidebar-link">
                         Generate Mobile Automation Code
                     </Link>
@@ -30,18 +35,13 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li className="sidebar-item">
-                    <Link to="/flaky-analyzer" className="sidebar-link">
-                        Flaky Test Analyzer
-                    </Link>
-                </li>
-                <li className="sidebar-item">
                     <Link to="/selenium-to-playwright" className="sidebar-link">
                         Selenium to Playwright
                     </Link>
                 </li>
                 <li className="sidebar-item">
-                    <Link to="/ConfigurationTab" className="sidebar-link">
-                        Configure Your LLM
+                    <Link to="/flaky-analyzer" className="sidebar-link">
+                        Flaky Test Analyzer
                     </Link>
                 </li>
             </ul>

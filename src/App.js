@@ -16,14 +16,14 @@ function App() {
         <Sidebar />
         <div className="main-content">
           <Routes>
+            <Route path="/ConfigurationTab" element={<ConfigurationTab />} />
             <Route path="/generate" element={<SwaggerToRestAssuredPage />} />
             <Route path="/dom-to-appiumcode" element={<MobileDomToAppiumCode7 />} />
             <Route path="/description-to-testcase" element={<GenerateTestFromDesign />} />
             <Route path="/selenium-to-playwright" element={<SeleniumToPlaywrightPage />} />
             <Route path="/flaky-analyzer" element={<FlakyAnalyzerTab />} />
-            <Route path="/ConfigurationTab" element={<ConfigurationTab />} />
             {/* Default route */}
-            <Route path="/" element={<SwaggerToRestAssuredPage />} />
+            <Route path="/ConfigurationTab" element={<ConfigurationTab />} />
           </Routes>
         </div>
       </div>
