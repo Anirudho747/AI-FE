@@ -30,6 +30,11 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li className="sidebar-item">
+                    <Link to="/flaky-analyzer" className="sidebar-link">
+                        Flaky Test Analyzer
+                    </Link>
+                </li>
+                <li className="sidebar-item">
                     <Link to="/selenium-to-playwright" className="sidebar-link">
                         Selenium to Playwright
                     </Link>

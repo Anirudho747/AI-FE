@@ -5,6 +5,7 @@ import SwaggerToRestAssuredPage from './components/SwaggerToRestAssuredPage';
 import SeleniumToPlaywrightPage from './components/SeleniumToPlaywrightPage';
 import ConfigurationTab from './components/ConfigurationTab';
 import DomToCode7 from "./components/MobileDomToAppiumCode7";
+import FlakyAnalyzerTab from './components/FlakyAnalyzerTab';
 import GenerateTestFromDesign from "./components/GenerateTestFromDesign";
 import MobileDomToAppiumCode7 from "./components/MobileDomToAppiumCode7";
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/dom-to-appiumcode" element={<MobileDomToAppiumCode7 />} />
             <Route path="/description-to-testcase" element={<GenerateTestFromDesign />} />
             <Route path="/selenium-to-playwright" element={<SeleniumToPlaywrightPage />} />
+            <Route path="/flaky-analyzer" element={<FlakyAnalyzerTab />} />
             <Route path="/ConfigurationTab" element={<ConfigurationTab />} />
             {/* Default route */}
             <Route path="/" element={<SwaggerToRestAssuredPage />} />
