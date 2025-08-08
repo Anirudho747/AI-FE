@@ -68,3 +68,49 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+Frontend (React) README – Flaky Test Analyzer & LLM
+Tools
+Overview
+This frontend is built using **React.js** and provides multiple QA-focused tools, including:
+1. **Flaky Test Analyzer** – Upload test run results (CSV/JSON), detect flaky tests, and get AI-based
+   suggestions.
+2. **Generate Test from Design** – Enter Jira story or screen description to generate test cases in BDD
+   & TDD format.
+3. **Other QA Tools** – Depending on your version, additional tabs may exist.
+   The UI interacts with the backend (Spring Boot) via REST APIs.
+---
+Prerequisites
+On **Windows** and **macOS**:
+- **Node.js** (v18.x or newer) – Includes `npm`
+- Download: https://nodejs.org/en/download/
+- **Git** – For cloning the repository
+- Download: https://git-scm.com/downloads
+  To verify installations:
+node -v
+npm -v
+git --version
+
+---
+Installation Steps
+1. Clone the Repository
+
+git clone https://github.com/your-org/your-fe-repo.git
+cd your-fe-repo
+
+2. Install Dependencies
+
+npm install
+
+3 Start the Development Server
+npm start
+
+This launches the React app in your default browser at:
+http://localhost:3000
+
+---
+Common Issues & Fixes
+- **CORS Errors** – Ensure backend has CORS enabled.
+- **API URL not found** – Verify backend URL and port are correct.
+- **Dependency errors** – Delete `node_modules` and run `npm install` again.
+---
